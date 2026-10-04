@@ -825,6 +825,14 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 async def register(body: dict):
     return {"status": "registered", "username": body.get("username", "user")}
 
+@app.get("/")
+async def root():
+    return {"status": "ok", "service": "Voice Reminder Backend"}
+
+@app.get("/health")
+async def root_health():
+    return {"status": "ok"}
+
 @app.get("/api/mobile/health")
 async def health_check():
     return {"status": "ok", "service": "lightweight-backend"}
