@@ -244,7 +244,7 @@ fun LoginScreen(
                                 onValueChange = { serverUrl = it },
                                 label = { Text("Server URL") },
                                 singleLine = true,
-                                placeholder = { Text("http://192.168.x.x:8000/") },
+                                placeholder = { Text("https://voice-reminder.onrender.com/") },
                                 keyboardOptions = KeyboardOptions(
                                     keyboardType = KeyboardType.Uri,
                                     imeAction = ImeAction.Done

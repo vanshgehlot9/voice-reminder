@@ -27,8 +27,9 @@ object AuthManager {
     var baseUrl: String
         get() {
             val saved = prefs?.getString(KEY_BASE_URL, DEFAULT_BASE_URL) ?: DEFAULT_BASE_URL
-            // If the old stale local IP is stuck in prefs, use the live default URL
-            if (saved.contains("192.168.31.197")) {
+            // If old stale URLs or temporary tunnels are stuck in prefs, reset to live Render default URL
+            if (saved.contains("192.168.31.197") || saved.contains("ngrok-free.dev") || saved.contains("YOUR_SERVER_IP")) {
+                prefs?.edit()?.putString(KEY_BASE_URL, DEFAULT_BASE_URL)?.apply()
                 return DEFAULT_BASE_URL
             }
             return saved

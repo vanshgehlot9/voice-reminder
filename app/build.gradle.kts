@@ -18,8 +18,8 @@ android {
         versionCode = 1
         versionName = "1.0.0"
 
-        // Public secure HTTPS tunnel (works anywhere on college WiFi, mobile hotspot, or home)
-        buildConfigField("String", "BASE_URL", "\"https://swerve-buddhist-swaddling.ngrok-free.dev/\"")
+        // Production Cloud Backend on Render
+        buildConfigField("String", "BASE_URL", "\"https://voice-reminder.onrender.com/\"")
 
         // Increase timeout for slow networks (2G/3G on low-end devices)
         buildConfigField("Long", "NETWORK_TIMEOUT_SECONDS", "120L")
@@ -36,8 +36,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // Update BASE_URL to your production server IP before release
-            buildConfigField("String", "BASE_URL", "\"http://YOUR_SERVER_IP:9000/\"")
+            buildConfigField("String", "BASE_URL", "\"https://voice-reminder.onrender.com/\"")
             buildConfigField("Long", "NETWORK_TIMEOUT_SECONDS", "120L")
         }
     }

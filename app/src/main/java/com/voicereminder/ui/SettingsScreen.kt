@@ -200,7 +200,7 @@ fun SettingsScreen(
             text = {
                 Column {
                     Text(
-                        "Set the server address. For universal access on any network or college WiFi, use the public URL:\n• https://swerve-buddhist-swaddling.ngrok-free.dev/\n• Or your Mac's IP (e.g. http://192.168.21.182:9000/)",
+                        "Set the server address. Cloud deployment:\n• https://voice-reminder.onrender.com/\n• Or custom IP/tunnel (e.g. http://192.168.x.x:9000/)",
                         fontSize = 13.sp,
                         color = TextSecondary,
                         lineHeight = 18.sp
