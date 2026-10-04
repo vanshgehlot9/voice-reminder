@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ================================================================ -->
+    <!-- PERMISSIONS                                                       -->
+    <!-- ================================================================ -->
+
+    <!-- Voice recording -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- Network (send audio to voicebox backend) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Reschedule alarms after device reboot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Exact alarms — required for reliable reminders on Android 12+ -->
+    <!-- On API 31+ the user grants this via Settings > Special App Access > Alarms & Reminders -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- Fallback for API 33+ devices -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
+    <!-- Notifications (required on Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Keep CPU on while WorkManager runs (low-end devices in Doze mode) -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Foreground service for audio recording on API 29+ -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <!-- Foreground service for TTS reminder speech -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+
+    <!-- Overlay permission: allows showing Siri floating assistant over Home screen and other apps -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <!-- ================================================================ -->
+    <!-- HARDWARE FEATURES (not required — VoiceReminder degrades gracefully) -->
+    <!-- ================================================================ -->
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+
+    <application
+        android:name=".VoiceReminderApp"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.VoiceReminder"
+        android:hardwareAccelerated="true"
+        android:usesCleartextTraffic="true">
+
+        <!-- ============================================================ -->
+        <!-- MAIN ACTIVITY                                                 -->
+        <!-- ============================================================ -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- ============================================================ -->
+        <!-- TRANSLUCENT FLOATING VOICE ASSISTANT ACTIVITY                 -->
+        <!-- Appears over Home screen & other apps like Siri/Google Assistant -->
+        <!-- ============================================================ -->
+        <activity
+            android:name=".voice.VoiceAssistantActivity"
+            android:theme="@style/Theme.VoiceReminder.Translucent"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:windowSoftInputMode="adjustResize"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true" />
+
+        <!-- ============================================================ -->
+        <!-- ALARM RECEIVER — fires when AlarmManager triggers            -->
+        <!-- ============================================================ -->
+        <receiver
+            android:name=".alarm.ReminderReceiver"
+            android:exported="true">
+            <intent-filter>
+                <!-- Re-schedule alarms after device reboot -->
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                <!-- Our custom alarm action -->
+                <action android:name="com.voicereminder.ACTION_REMINDER" />
+            </intent-filter>
+        </receiver>
+
+        <!-- ============================================================ -->
+        <!-- NOTIFICATION CHANNEL ID (referenced in code)                 -->
+        <!-- ============================================================ -->
+        
+        <!-- Wake Word Background Service -->
+        <service
+            android:name=".voice.WakeWordService"
+            android:foregroundServiceType="microphone"
+            android:exported="false" />
+
+        <!-- TTS Reminder Speaker (speaks reminder aloud when alarm fires) -->
+        <service
+            android:name=".notification.ReminderSpeakerService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="false" />
+
+        <!-- FileProvider for opening generated PDF documents -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+    </application>
+
+</manifest>

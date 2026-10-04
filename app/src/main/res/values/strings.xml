@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">VoiceReminder</string>
+    <string name="app_description">Set reminders with your voice</string>
+
+    <!-- Accessibility -->
+    <string name="mic_button_start">Start recording</string>
+    <string name="mic_button_stop">Stop recording</string>
+    <string name="reminder_list">Reminder list</string>
+    <string name="delete_reminder">Delete reminder</string>
+
+    <!-- Notification -->
+    <string name="notification_channel_name">Reminders</string>
+    <string name="notification_channel_description">Voice reminder alerts</string>
+    <string name="notification_title">⏰ Reminder</string>
+</resources>
