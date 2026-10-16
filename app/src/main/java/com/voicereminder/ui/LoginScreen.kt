@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -202,6 +203,26 @@ fun LoginScreen(
                 } else {
                     Text("Sign In", color = White, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                 }
+            }
+
+            Spacer(Modifier.height(10.dp))
+
+            // ── Continue as Guest / Skip Button ─────────────────
+            OutlinedButton(
+                onClick = {
+                    AuthManager.accessToken = "lightweight_dummy_token"
+                    onLoginSuccess()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = Violet400
+                ),
+                border = BorderStroke(1.dp, Violet400.copy(alpha = 0.6f))
+            ) {
+                Text("Continue as Guest / Skip", fontWeight = FontWeight.Medium, fontSize = 15.sp)
             }
 
             Spacer(Modifier.height(16.dp))

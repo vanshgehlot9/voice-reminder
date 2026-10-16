@@ -6,7 +6,7 @@ import asyncio
 import datetime
 import zoneinfo
 from typing import Optional
-from fastapi import FastAPI, BackgroundTasks, Depends, UploadFile, File, Form, Request
+from fastapi import FastAPI, BackgroundTasks, Depends, UploadFile, File, Form, Request, Response
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
@@ -27,6 +27,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Handle HEAD requests cleanly for uptime monitors and health checks (prevents 405 Method Not Allowed)
+@app.middleware("http")
+async def handle_head_requests(request: Request, call_next):
+    is_head = request.method == "HEAD"
+    if is_head:
+        request.scope["method"] = "GET"
+    response = await call_next(request)
+    if is_head:
+        return Response(
+            status_code=response.status_code,
+            headers=dict(response.headers),
+            media_type=response.media_type
+        )
+    return response
 
 def get_groq_client():
     load_dotenv(override=True)
@@ -825,15 +840,15 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 async def register(body: dict):
     return {"status": "registered", "username": body.get("username", "user")}
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 async def root():
     return {"status": "ok", "service": "Voice Reminder Backend"}
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 async def root_health():
     return {"status": "ok"}
 
-@app.get("/api/mobile/health")
+@app.api_route("/api/mobile/health", methods=["GET", "HEAD"])
 async def health_check():
     return {"status": "ok", "service": "lightweight-backend"}
 

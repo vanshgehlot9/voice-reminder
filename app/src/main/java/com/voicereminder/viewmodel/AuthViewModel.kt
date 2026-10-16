@@ -42,9 +42,11 @@ class AuthViewModel : ViewModel() {
                         _authState.value = AuthState.Success
                     }
                     response.code() == 404 -> {
-                        val url = AuthManager.baseUrl
+                        if (AuthManager.baseUrl.contains("ngrok") || AuthManager.baseUrl.contains("192.168.") || AuthManager.baseUrl.contains("YOUR_SERVER_IP")) {
+                            AuthManager.baseUrl = AuthManager.DEFAULT_BASE_URL
+                        }
                         _authState.value = AuthState.Error(
-                            "Server not found (404). Check that your backend is running at:\n$url\n\nUpdate server URL below if needed."
+                            "Server not responding at ${AuthManager.baseUrl}\n\nRender cloud services may take ~30 seconds to wake up from idle. Please wait a moment and try again, or tap 'Continue as Guest'."
                         )
                     }
                     response.code() == 400 -> {
@@ -56,11 +58,17 @@ class AuthViewModel : ViewModel() {
                     }
                 }
             } catch (e: ConnectException) {
-                _authState.value = AuthState.Error("Cannot connect to server at ${AuthManager.baseUrl}\n\nMake sure:\n• Backend is running\n• Phone and Mac are on same WiFi\n• IP address is correct")
+                if (AuthManager.baseUrl.contains("ngrok")) {
+                    AuthManager.baseUrl = AuthManager.DEFAULT_BASE_URL
+                }
+                _authState.value = AuthState.Error("Cannot connect to server at ${AuthManager.baseUrl}\n\nRender free servers sleep when idle and take ~30s to wake up on first launch. Try again in a few moments, or tap 'Continue as Guest'.")
             } catch (e: SocketTimeoutException) {
-                _authState.value = AuthState.Error("Connection timed out. Server may be slow or unreachable.")
+                _authState.value = AuthState.Error("Connection timed out waiting for server. Render free instances sleep when idle and take ~30s to boot. Please try again or tap 'Continue as Guest'.")
             } catch (e: UnknownHostException) {
-                _authState.value = AuthState.Error("Unknown host. Check the server IP in settings below.")
+                if (AuthManager.baseUrl.contains("ngrok")) {
+                    AuthManager.baseUrl = AuthManager.DEFAULT_BASE_URL
+                }
+                _authState.value = AuthState.Error("Unknown host at ${AuthManager.baseUrl}. Reverted to default Render URL. Please try again.")
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Login error", e)
                 _authState.value = AuthState.Error("Network error: ${e.localizedMessage}")

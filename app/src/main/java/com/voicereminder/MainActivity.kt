@@ -172,7 +172,8 @@ private fun VoiceReminderAppUI() {
     }
 
     // ── Navigation ──────────────────────────────────────────
-    val startDest = if (com.voicereminder.network.AuthManager.accessToken == null) Routes.LOGIN else Routes.HOME
+    // First-time users land directly on HOME dashboard; LoginScreen is optional/fallback
+    val startDest = Routes.HOME
 
     
     val navBackStackEntry by navController.currentBackStackEntryAsState()
